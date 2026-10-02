@@ -368,6 +368,20 @@ a {
   font-size: 14px;
 }
 
+.card-deadline {
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+.card-deadline.deadline-soon {
+  color: var(--warn);
+}
+
+.card-deadline.deadline-passed,
+.card-deadline.deadline-unknown {
+  color: var(--muted);
+}
+
 .card-summary {
   margin: 10px 0 0;
 }

@@ -62,6 +62,29 @@ export function compareJobs(a, b) {
   );
 }
 
+const SOON_DAYS = 7;
+
+function isoDayNumber(iso) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || "").trim());
+  if (!match) return null;
+  const ms = Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  const check = new Date(ms);
+  if (check.getUTCMonth() !== Number(match[2]) - 1 || check.getUTCDate() !== Number(match[3])) return null;
+  return ms / 86400000;
+}
+
+// How long is left to apply. Works on calendar days only, so the user's timezone
+// never shifts a deadline by one.
+export function closingInfo(job, today) {
+  const note = String(job.closing_date_note || "").trim();
+  const due = isoDayNumber(job.closing_date);
+  const now = isoDayNumber(today);
+  if (due === null || now === null) return { date: null, daysLeft: null, state: "unknown", note };
+  const daysLeft = due - now;
+  const state = daysLeft < 0 ? "passed" : daysLeft <= SOON_DAYS ? "soon" : "open";
+  return { date: String(job.closing_date).trim(), daysLeft, state, note };
+}
+
 export function todayIso(now = new Date()) {
   const pad = (n) => String(n).padStart(2, "0");
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;

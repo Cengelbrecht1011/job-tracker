@@ -10,6 +10,7 @@ import {
   isNetherlands,
   sponsorshipMentioned,
   compareJobs,
+  closingInfo,
   todayIso,
   setStatus,
   setNote,
@@ -224,11 +225,40 @@ export function startApp(store, { signOut }) {
     return [job.company, place].filter(Boolean).join(" · ");
   }
 
+  function deadlineLine(closing) {
+    if (closing.date) {
+      const left =
+        closing.state === "passed"
+          ? "closing date has passed"
+          : closing.daysLeft === 0
+            ? "closes today"
+            : `${closing.daysLeft} ${closing.daysLeft === 1 ? "day" : "days"} left`;
+      return h(
+        "p",
+        { class: `card-deadline deadline-${closing.state}` },
+        h("strong", { text: `Apply by ${formatDate(closing.date)}` }),
+        ` · ${left}`,
+      );
+    }
+    if (closing.note) return h("p", { class: "card-deadline" }, h("strong", { text: "Apply by: " }), closing.note);
+    return h("p", { class: "card-deadline deadline-unknown", text: "Closing date not listed" });
+  }
+
+  function deadlineBadge(closing) {
+    if (closing.state === "soon") {
+      return badge(closing.daysLeft === 0 ? "Closes today" : `Closes in ${closing.daysLeft} ${closing.daysLeft === 1 ? "day" : "days"}`, "warn");
+    }
+    return closing.state === "passed" ? badge("Closing date passed", "neutral") : null;
+  }
+
   function jobCard(job) {
     const busy = state.busy.has(job.job_id);
     const hasResume = store.resumes.has(job.job_id);
+    const showDeadline = PRE_APPLICATION_TABS.has(tabOf(job.status));
+    const closing = closingInfo(job, todayIso());
     const badges = [
       isNetherlands(job) ? badge("Netherlands", "nl") : null,
+      showDeadline ? deadlineBadge(closing) : null,
       sponsorshipMentioned(job) ? badge("Sponsorship mentioned", "ok") : null,
       job.status === "stale" ? badge("Not seen in latest search", "warn") : null,
       job.status === "accepted" ? badge(hasResume ? "Tailored resume ready" : "Resume queued", hasResume ? "ok" : "neutral") : null,
@@ -265,6 +295,7 @@ export function startApp(store, { signOut }) {
       badges.length ? h("div", { class: "badges" }, badges) : null,
       h("h3", { class: "card-title", text: job.title || "Untitled role" }),
       h("p", { class: "card-meta", text: metaLine(job) }),
+      showDeadline ? deadlineLine(closing) : null,
       job.job_description_summary ? h("p", { class: "card-summary", text: job.job_description_summary }) : null,
       jobDetails(job),
       h("div", { class: "actions" }, actions),
