@@ -1,2 +1,0 @@
-# job-tracker
-Job Tracker

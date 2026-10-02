@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.github.com; img-src 'self' data:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Job Tracker</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <main id="login-view" class="login-view" hidden>
+    <form id="login-form" class="login-card" autocomplete="on">
+      <h1>Job Tracker</h1>
+      <p class="muted">Sign in to review jobs and track applications.</p>
+      <label class="field">
+        <span>Username</span>
+        <input id="login-username" name="username" autocomplete="username" required>
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <p id="login-error" class="form-error" role="alert" hidden></p>
+      <button id="login-submit" class="btn btn-primary btn-block" type="submit">Sign in</button>
+      <p id="setup-note" class="setup-note" hidden>
+        This tracker isn't set up yet. Open <a href="setup.html">setup</a> to create your login.
+      </p>
+    </form>
+  </main>
+
+  <div id="app-view" class="app" hidden>
+    <header class="topbar">
+      <div>
+        <h1 class="brand">Job Tracker</h1>
+        <p id="last-run" class="muted small"></p>
+      </div>
+      <div class="topbar-actions">
+        <button id="refresh-btn" class="btn btn-secondary btn-sm" type="button">Refresh</button>
+        <button id="signout-btn" class="btn btn-ghost btn-sm" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <div id="pending-banner" class="banner" hidden>
+      <span id="pending-text"></span>
+      <button id="pending-btn" class="btn btn-primary btn-sm" type="button">Confirm applications</button>
+    </div>
+
+    <nav id="tabs" class="tabs" role="tablist" aria-label="Job lists"></nav>
+
+    <div class="filters">
+      <input id="search" class="input" type="search" placeholder="Search title, company, location…" aria-label="Search jobs">
+      <select id="country" class="input" aria-label="Filter by country"></select>
+    </div>
+
+    <section id="content" role="tabpanel"></section>
+  </div>
+
+  <dialog id="apply-dialog" class="dialog" aria-labelledby="apply-title">
+    <h2 id="apply-title">Did you apply?</h2>
+    <p class="muted">You opened these job sites. Tick the ones you applied to and they'll move to your pipeline.</p>
+    <ul id="apply-list" class="apply-list"></ul>
+    <div class="dialog-actions">
+      <button id="apply-later" class="btn btn-ghost" type="button">Ask me later</button>
+      <button id="apply-confirm" class="btn btn-primary" type="button">Mark as applied</button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src https://api.github.com; img-src 'self' data:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Job Tracker Setup</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="js/setup.js"></script>
+</head>
+<body>
+  <main class="setup">
+    <h1>Job Tracker setup</h1>
+    <p>This creates the login for your tracker. Everything happens in this browser: your token is encrypted
+      with your password before it leaves this page, and this page can only talk to <code>api.github.com</code>.</p>
+
+    <h2>1. Create a GitHub access token</h2>
+    <ol>
+      <li>Signed in as the account that owns the private jobs repo, open
+        <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">GitHub → New fine-grained token</a>.</li>
+      <li>Name it <em>Job Tracker</em> and pick an expiration (you'll redo this setup when it expires).</li>
+      <li>Repository access: <strong>Only select repositories</strong> → choose the private jobs repo.</li>
+      <li>Permissions → Repository permissions → <strong>Contents: Read and write</strong>. Nothing else.</li>
+      <li>Generate the token and paste it below.</li>
+    </ol>
+
+    <h2>2. Fill in your login</h2>
+    <form id="setup-form" autocomplete="off">
+      <fieldset>
+        <legend>Your login</legend>
+        <label class="field"><span>Username</span><input id="username" class="input" required></label>
+        <div class="field-row">
+          <label class="field"><span>Password (12+ characters)</span><input id="password" class="input" type="password" autocomplete="new-password" minlength="12" required></label>
+          <label class="field"><span>Confirm password</span><input id="confirm" class="input" type="password" autocomplete="new-password" required></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Private jobs repo</legend>
+        <label class="field"><span>GitHub token</span><input id="token" class="input" type="password" autocomplete="off" required></label>
+        <div class="field-row">
+          <label class="field"><span>Repo owner</span><input id="owner" class="input" placeholder="github-username" required></label>
+          <label class="field"><span>Repo name</span><input id="repo" class="input" placeholder="repo-name" required></label>
+        </div>
+        <div class="field-row">
+          <label class="field"><span>Branch</span><input id="branch" class="input" value="main"></label>
+          <label class="field"><span>Jobs file</span><input id="jobs-path" class="input" value="JobList/jobs.json"></label>
+        </div>
+      </fieldset>
+      <div class="button-row">
+        <button id="check" class="btn btn-secondary" type="button">Check access</button>
+        <button class="btn btn-primary" type="submit">Create login file</button>
+      </div>
+      <p id="status" class="setup-status" role="status"></p>
+    </form>
+
+    <section id="output-section" hidden>
+      <h2>3. Publish the login file</h2>
+      <p>Download <code>config.enc.json</code> and put it next to <code>index.html</code> in the public site repo
+        (or send it to Claude to commit). It's encrypted — useless without your username and password.</p>
+      <textarea id="output" class="input output" readonly aria-label="Encrypted login file"></textarea>
+      <div class="button-row">
+        <button id="download" class="btn btn-primary" type="button">Download config.enc.json</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
